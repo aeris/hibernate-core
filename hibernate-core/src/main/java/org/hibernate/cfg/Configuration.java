@@ -961,6 +961,29 @@ public class Configuration implements Serializable {
 	}
 
 	/**
+	 * Get list of necessary schemas for create tables.
+	 *
+	 * @param dialect
+	 *            Dialect to use.
+	 * @return Necessary schema.
+	 */
+	// PATCH HHH-1853: create schema during hbm2ddl
+	public Set findSchemaDefinitions(final Dialect dialect) {
+		final Set schemas = new HashSet();
+		final Iterator each = this.getTableMappings();
+		while (each.hasNext()) {
+			final Table t = (Table) each.next();
+			if (t.isPhysicalTable()) {
+				final String schema = t.getQuotedSchema(dialect);
+				if (schema != null) {
+					schemas.add(schema);
+				}
+			}
+		}
+		return schemas;
+	}
+
+	/**
 	 * Generate DDL for dropping tables
 	 *
 	 * @param dialect The dialect for which to generate the drop script
@@ -1045,6 +1068,12 @@ public class Configuration implements Serializable {
 			script.addAll( Arrays.asList( lines ) );
 		}
 
+		// PATCH HHH-1853: create schema during hbm2ddl
+		final Iterator each = this.findSchemaDefinitions(dialect).iterator();
+		while (each.hasNext()) {
+			script.add(dialect.getDropSchemaString((String) each.next()));
+		}
+
 		return ArrayHelper.toStringArray( script );
 	}
 
@@ -1064,6 +1093,12 @@ public class Configuration implements Serializable {
 		ArrayList<String> script = new ArrayList<String>( 50 );
 		String defaultCatalog = properties.getProperty( Environment.DEFAULT_CATALOG );
 		String defaultSchema = properties.getProperty( Environment.DEFAULT_SCHEMA );
+
+		// PATCH HHH-1853: create schema during hbm2ddl
+		final Iterator each = this.findSchemaDefinitions(dialect).iterator();
+		while (each.hasNext()) {
+			script.add(dialect.getCreateSchemaString((String) each.next()));
+		}
 
 		Iterator iter = getTableMappings();
 		while ( iter.hasNext() ) {
@@ -1167,11 +1202,17 @@ public class Configuration implements Serializable {
 
 		ArrayList<String> script = new ArrayList<String>( 50 );
 
+		// PATCH HHH-1853: create schema during hbm2ddl
+		final Iterator each = this.findSchemaDefinitions(dialect).iterator();
+		while (each.hasNext()) {
+			script.add(dialect.getCreateSchemaString((String) each.next()));
+		}
+
 		Iterator iter = getTableMappings();
 		while ( iter.hasNext() ) {
 			Table table = (Table) iter.next();
 			if ( table.isPhysicalTable() ) {
-				
+
 				TableMetadata tableInfo = databaseMetadata.getTableMetadata(
 						table.getName(),
 						( table.getSchema() == null ) ? defaultSchema : table.getSchema(),
@@ -1297,12 +1338,12 @@ public class Configuration implements Serializable {
 
 		String defaultCatalog = properties.getProperty( Environment.DEFAULT_CATALOG );
 		String defaultSchema = properties.getProperty( Environment.DEFAULT_SCHEMA );
-		
+
 		Iterator iter = getTableMappings();
 		while ( iter.hasNext() ) {
 			Table table = (Table) iter.next();
 			if ( table.isPhysicalTable() ) {
-				
+
 
 				TableMetadata tableInfo = databaseMetadata.getTableMetadata(
 						table.getName(),
@@ -3497,7 +3538,7 @@ public class Configuration implements Serializable {
 			}
 			binding.addBinding( logicalName, physicalColumn );
 		}
- 
+
 		public String getPhysicalColumnName(String logicalName, Table table) throws MappingException {
 			logicalName = logicalName.toLowerCase();
 			String finalName = null;
@@ -3981,7 +4022,7 @@ public class Configuration implements Serializable {
 			catch ( MappingException me ) {
 				throw new InvalidMappingException(
 						metadataXml.getOrigin().getType(),
-						metadataXml.getOrigin().getName(), 
+						metadataXml.getOrigin().getName(),
 						me
 				);
 			}

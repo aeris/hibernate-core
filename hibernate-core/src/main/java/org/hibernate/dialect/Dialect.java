@@ -1059,7 +1059,7 @@ public abstract class Dialect {
 	 * dialect given the aliases of the columns to be write locked.
 	 *
 	 * @param aliases The columns to be write locked.
-	 * @param lockOptions 
+	 * @param lockOptions
 	 * @return The appropriate <tt>FOR UPDATE OF column_list</tt> clause string.
 	 */
 	public String getForUpdateString(String aliases, LockOptions lockOptions) {
@@ -1216,7 +1216,7 @@ public abstract class Dialect {
 	 * <li><i>null</i> - defer to the JDBC driver response in regards to
 	 * {@link java.sql.DatabaseMetaData#dataDefinitionCausesTransactionCommit()}</li>
 	 * </ul>
-	 * 
+	 *
 	 * @return see the result matrix above.
 	 */
 	public Boolean performTemporaryTableDDLInIsolation() {
@@ -1980,5 +1980,27 @@ public abstract class Dialect {
 	public boolean supportsTupleDistinctCounts() {
 		// oddly most database in fact seem to, so true is the default.
 		return true;
+	}
+
+	/**
+	 * The syntax used to create a schema.
+	 *
+	 * @param schemaName
+	 *            The name of the schema.
+	 * @return The "create schema" fragment
+	 */
+	public String getCreateSchemaString(final String schemaName) {
+		return "create schema " + schemaName;
+	}
+
+	/**
+	 * The syntax used to drop a schema.
+	 *
+	 * @param schemaName
+	 *            The name of the schema.
+	 * @return The "drop schema" fragment
+	 */
+	public String getDropSchemaString(final String schemaName) {
+		return "drop schema " + schemaName;
 	}
 }
