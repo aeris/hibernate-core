@@ -31,6 +31,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import org.hibernate.ejb.Ejb3Configuration;
+import org.hibernate.mapping.Column;
+import org.hibernate.mapping.Table;
+
+import javax.persistence.EntityManager;
+import java.util.Arrays;
 
 /**
  * @author Adam Warski (adam at warski dot org)

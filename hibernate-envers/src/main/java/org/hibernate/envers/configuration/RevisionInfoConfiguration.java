@@ -58,11 +58,13 @@ public class RevisionInfoConfiguration {
     private PropertyData revisionInfoIdData;
     private PropertyData revisionInfoTimestampData;
     private Type revisionInfoTimestampType;
+    private GlobalConfiguration globalCfg;
 
     private String revisionPropType;
     private String revisionPropSqlType;
 
-    public RevisionInfoConfiguration() {
+    public RevisionInfoConfiguration(GlobalConfiguration globalCfg) {
+        this.globalCfg = globalCfg;
         revisionInfoEntityName = "org.hibernate.envers.DefaultRevisionEntity";
         revisionInfoIdData = new PropertyData("id", "id", "field", null);
         revisionInfoTimestampData = new PropertyData("timestamp", "timestamp", "field", null);
@@ -74,18 +76,18 @@ public class RevisionInfoConfiguration {
     private Document generateDefaultRevisionInfoXmlMapping() {
         Document document = DocumentHelper.createDocument();
 
-        Element class_mapping = MetadataTools.createEntity(document, new AuditTableData(null, null, null, null), null);
+        Element class_mapping = MetadataTools.createEntity(document, new AuditTableData(null, null, globalCfg.getDefaultSchemaName(), globalCfg.getDefaultCatalogName()), null);
 
         class_mapping.addAttribute("name", revisionInfoEntityName);
         class_mapping.addAttribute("table", "REVINFO");
 
         Element idProperty = MetadataTools.addNativelyGeneratedId(class_mapping, revisionInfoIdData.getName(),
                 revisionPropType);
-        MetadataTools.addColumn(idProperty, "REV", null, 0, 0, null, null, null);
+        MetadataTools.addColumn(idProperty, "REV", null, 0, 0, null, null, null, false);
 
         Element timestampProperty = MetadataTools.addProperty(class_mapping, revisionInfoTimestampData.getName(),
                 revisionInfoTimestampType.getName(), true, false);
-        MetadataTools.addColumn(timestampProperty, "REVTSTMP", null, 0, 0, null, null, null);
+        MetadataTools.addColumn(timestampProperty, "REVTSTMP", null, 0, 0, null, null, null, false);
 
         return document;
     }
@@ -98,7 +100,7 @@ public class RevisionInfoConfiguration {
 
         if (revisionPropSqlType != null) {
             // Putting a fake name to make Hibernate happy. It will be replaced later anyway.
-            MetadataTools.addColumn(rev_rel_mapping, "*" , null, 0, 0, revisionPropSqlType, null, null);
+            MetadataTools.addColumn(rev_rel_mapping, "*" , null, 0, 0, revisionPropSqlType, null, null, false);
         }
 
         return rev_rel_mapping;
@@ -243,10 +245,10 @@ public class RevisionInfoConfiguration {
                 new RevisionInfoQueryCreator(revisionInfoEntityName, revisionInfoIdData.getName(),
                         revisionInfoTimestampData.getName(), isTimestampAsDate()),
                 generateRevisionInfoRelationMapping(),
-                new RevisionInfoNumberReader(revisionInfoClass, revisionInfoIdData), revisionInfoEntityName, 
+                new RevisionInfoNumberReader(revisionInfoClass, revisionInfoIdData), revisionInfoEntityName,
                 revisionInfoClass, revisionInfoTimestampData);
     }
-    
+
     private boolean isTimestampAsDate() {
     	String typename = revisionInfoTimestampType.getName();
     	return "date".equals(typename) || "time".equals(typename) || "timestamp".equals(typename);
@@ -309,5 +311,5 @@ class RevisionInfoConfigurationResult {
 	public PropertyData getRevisionInfoTimestampData() {
 		return revisionInfoTimestampData;
 	}
-    
+
 }

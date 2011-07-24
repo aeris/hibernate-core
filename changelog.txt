@@ -5,6 +5,110 @@ match the actual issue resolution (i.e. a bug might not be a bug). Please
 refer to the particular case on JIRA using the issue tracking number to learn
 more about each case.
 
+Changes in version 3.6.6 (2011.07.20)
+-------------------------------------------
+https://hibernate.onjira.com/browse/HHH/fixforversion/11232
+
+** Bug
+    * [HHH-2614] - Blob Length Set to 255 By Default With Derby DB
+    * [HHH-6381] - using @SecondaryTable with optional=true not handled for joined subclasses (@Inheritance(strategy = InheritanceType.JOINED)
+    * [HHH-6386] - sybase improvement
+    * [HHH-6442] - JarVisitorFactory is reconstructing URLs without the URLStreamHandler association
+    * [HHH-6456] - Test failure in CachedPropertyRefCollectionTest behind a proxy
+
+** Improvement
+    * [HHH-5478] - Update Ehcache capabilities in the section [21.2. The Second Level Cache] of the documentation
+    * [HHH-6083] - Upgrade to latest Ehcache & add org.hibernate 3.3 SPI wrappers
+    * [HHH-6421] - Reduce log level of LazyInitializationException from ERROR to TRACE
+
+** Patch
+    * [HHH-4630] - Criteria join on composite identifier generates wrong alias, SQL error
+
+** Task
+    * [HHH-6322] - upgrade to hibernate-jpa-2.0-api-1.0.1.Final
+    * [HHH-6420] - SQL Server dialect is broken (Tomaz Cerar)
+    * [HHH-6455] - Update Hibernate-ehcache to Ehcache 2.4.3
+
+
+Changes in version 3.6.5 (2011.06.08)
+-------------------------------------------
+http://opensource.atlassian.com/projects/hibernate/browse/HHH/fixforversion/11226
+
+** Bug
+    * [HHH-2225] - NPE when eager fetching joined component with native SQL query
+    * [HHH-4760] - NotAuditedException occurs when auditReader.getRevisions() is called for javassist proxies
+    * [HHH-5572] - clean up Sybase job failures
+    * [HHH-5808] - ObjectNotFoundException for an audited optional association. Envers is creating a proxy even when the association is null.
+    * [HHH-5967] - Envers Fetching Indexed Collection - Duplicate Row Exception
+    * [HHH-6119] - NullPointerException in AbstractPathImpl without source path
+    * [HHH-6176] - Envers ignores custom comparators for SortedSets
+    * [HHH-6219] - Memory leak with Infinispan cache
+    * [HHH-6223] - connection leak in entitymanager and annotation's testsuite
+    * [HHH-6231] - Upgrade ehcache version
+    * [HHH-6242] - no Types.BINARY type mapping in PostgresqlDialect
+    * [HHH-6243] - JBPAPP-3312 org.hibernate.test.legacy.CustomSQLTest fails
+
+** Improvement
+    * [HHH-5025] - Support caching audit queries using ehcache's DiskStore.
+    * [HHH-5598] - sybase integration improvement
+    * [HHH-5790] - method BasicBinder#bind() and BasicExtractor#extract missing guards for trace logging
+    * [HHH-6248] - Ominous-sounding WARN message from SessionFactoryObjectFactory
+
+** Task
+    * [HHH-6203] - Make necessary updates to pass nexus artifact validation
+    * [HHH-6224] - update mysql jdbc driver version for testing
+
+
+Changes in version 3.6.4 (2011.05.04)
+-------------------------------------------
+http://opensource.atlassian.com/projects/hibernate/browse/HHH/fixforversion/11220
+
+** Bug
+    * [HHH-2049] - LEFT OUTER JOIN subcriteria filters children
+    * [HHH-4073] - discriminator formula creates problem in hibernate envers
+    * [HHH-4787] - AuditProperty.isNull() doesn't generate "tab.col is null" SQL clause as expected
+    * [HHH-5276] - Table REVINFO created in the default schema even if the property is otherwise set
+    * [HHH-5887] - Document typo hibernate.hbm2ddl.import_files
+    * [HHH-6069] - Escape entity fields name when required
+    * [HHH-6095] - Improve the way AbstractEntityManagerImpl.flush checks for an active transaction, should apply to other AbstractEntityManagerImpl methods that also check for an active tx
+    * [HHH-6099] - Documentation poms have wrong parent declaration
+    * [HHH-6120] - Configuration addCacheableFile doesn't close input and output streams
+    * [HHH-6197] - Blank line at top of configuration.xml for en_US manual causes breaks documentation build
+
+** Improvement
+    * [HHH-6096] - H2Dialect should use CACHED option for temporary table creation
+
+** New Feature
+    * [HHH-6170] - Offer ability to customize the default TransactionFactory and TransactionManagerLookup implementation used if none is specifically specified
+
+
+Changes in version 3.6.3 (2011.04.06)
+-------------------------------------------
+http://opensource.atlassian.com/projects/hibernate/browse/HHH/fixforversion/11211
+
+** Bug
+    * [HHH-4999] - createSQLQuery(query).list() result screw up when when columns in different tables have same name
+    * [HHH-5803] - Better handling of implicit literal numeric expression typing
+    * [HHH-5940] - @MapKeyJoinColumns always throws an exception
+    * [HHH-5974] - unnecessary import which crashes the system in OSGi environement
+    * [HHH-5978] - TS: Postgresql 8.x - CustomSQLTest fails because UPPER()'s result is not converted to number.
+    * [HHH-6057] - hibernate.cfg.xml references wrong hbm.xml files and doesn't include reference to DTD file
+    * [HHH-6058] - Error in mapping file in Event.hbm.xml file for documentation in download
+
+** Improvement
+    * [HHH-5993] - Expose SessionFactoryObserver to Hibernate EntityManager configuration
+    * [HHH-6022] - Harden the JBossTSStandaloneTransactionManagerLookup implementation to better support JBoss TS version changes
+
+** New Feature
+    * [HHH-6084] - Provide an identifier generator strategy provider component for EntityManager
+
+** Patch
+    * [HHH-5348] - support for TypedQuery jpaql/hql "scalar" queries
+
+** Task
+    * [HHH-6009] - Rename module directories on 3.6 branch to match master
+
+
 Changes in version 3.6.2 (2011.03.09)
 -------------------------------------------
 http://opensource.atlassian.com/projects/hibernate/browse/HHH/fixforversion/11206

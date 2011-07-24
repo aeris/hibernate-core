@@ -921,8 +921,8 @@ public class Person {
                 Finally, add the new mapping to Hibernate's configuration:
             </para>
 
-            <programlisting role="XML"><![CDATA[<mapping resource="events/Event.hbm.xml"/>
-<mapping resource="events/Person.hbm.xml"/>]]></programlisting>
+            <programlisting role="XML"><![CDATA[<mapping resource="org/hibernate/tutorial/domain/Event.hbm.xml"/>
+<mapping resource="org/hibernate/tutorial/domain/Person.hbm.xml"/>]]></programlisting>
 
             <para>
                 Create an association between these two entities. Persons
@@ -1277,7 +1277,7 @@ public class Person {
 
             <programlisting role="XML"><![CDATA[        <set name="participants" table="PERSON_EVENT" inverse="true">
             <key column="EVENT_ID"/>
-            <many-to-many column="PERSON_ID" class="events.Person"/>
+            <many-to-many column="PERSON_ID" class="Person"/>
         </set>]]></programlisting>
 
             <para>

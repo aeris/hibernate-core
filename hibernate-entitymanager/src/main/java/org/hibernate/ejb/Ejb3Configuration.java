@@ -77,6 +77,7 @@ import org.hibernate.cfg.NamingStrategy;
 import org.hibernate.cfg.Settings;
 import org.hibernate.cfg.SettingsFactory;
 import org.hibernate.cfg.annotations.reflection.XMLContext;
+import org.hibernate.ejb.cfg.spi.IdentifierGeneratorStrategyProvider;
 import org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider;
 import org.hibernate.ejb.instrument.InterceptFieldClassFileTransformer;
 import org.hibernate.ejb.packaging.JarVisitorFactory;
@@ -91,6 +92,7 @@ import org.hibernate.ejb.util.LogHelper;
 import org.hibernate.ejb.util.NamingHelper;
 import org.hibernate.engine.FilterDefinition;
 import org.hibernate.event.EventListeners;
+import org.hibernate.id.factory.DefaultIdentifierGeneratorFactory;
 import org.hibernate.mapping.AuxiliaryDatabaseObject;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.persister.PersisterClassProvider;
@@ -1074,6 +1076,21 @@ public class Ejb3Configuration implements Serializable, Referenceable {
 			cfg.setSessionFactoryObserver( observer );
 		}
 
+		final IdentifierGeneratorStrategyProvider strategyProvider = instantiateCustomClassFromConfiguration(
+				preparedProperties,
+				null,
+				null,
+				AvailableSettings.IDENTIFIER_GENERATOR_STRATEGY_PROVIDER,
+				"Identifier generator strategy provider",
+				IdentifierGeneratorStrategyProvider.class
+		);
+		if ( strategyProvider != null ) {
+			final DefaultIdentifierGeneratorFactory identifierGeneratorFactory = cfg.getIdentifierGeneratorFactory();
+			for ( Map.Entry<String,Class<?>> entry : strategyProvider.getStrategies().entrySet() ) {
+				identifierGeneratorFactory.register( entry.getKey(), entry.getValue() );
+			}
+		}
+
 		if ( jaccKeys.size() > 0 ) {
 			addSecurity( jaccKeys, preparedProperties, workingVars );
 		}
@@ -1267,10 +1284,7 @@ public class Ejb3Configuration implements Serializable, Referenceable {
 			preparedProperties.setProperty(
 					Environment.TRANSACTION_STRATEGY, JoinableCMTTransactionFactory.class.getName()
 			);
-		}
-		else if ( ! hasTxStrategy && transactionType == PersistenceUnitTransactionType.RESOURCE_LOCAL ) {
-			preparedProperties.setProperty( Environment.TRANSACTION_STRATEGY, JDBCTransactionFactory.class.getName() );
-		}
+		} //else if RESOURCE_LOCAL, let the default being used.
 		if ( hasTxStrategy ) {
 			log.warn(
 					"Overriding {} is dangerous, this might break the EJB3 specification implementation",
