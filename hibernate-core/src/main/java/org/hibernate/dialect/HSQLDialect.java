@@ -659,4 +659,8 @@ public class HSQLDialect extends Dialect {
 	public boolean supportsTupleDistinctCounts() {
 		return false;
 	}
+
+	public String getCreateSchemaString(final String schema) {
+		return super.getCreateSchemaString(schema) + " authorization dba";
+	}
 }
