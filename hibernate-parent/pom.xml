@@ -60,9 +60,9 @@
     </licenses>
 
     <scm>
-	    <connection>scm:git:git//github.com:hibernate/hibernate-core.git</connection>
-        <developerConnection>scm:git:git//github.com:hibernate/hibernate-core.git</developerConnection>
-        <url>http://github.com/hibernate/hibernate-core</url>
+	    <connection>scm:git:git@github.com:aeris/hibernate-core.git</connection>
+        <developerConnection>scm:git:git//github.com:aeris/hibernate-core.git</developerConnection>
+        <url>http://github.com/aeris/hibernate-core</url>
     </scm>
 
     <ciManagement>
@@ -560,14 +560,14 @@
 
     <distributionManagement>
         <repository>
-            <id>jboss-releases-repository</id>
-			<name>JBoss Releases Repository</name>
-            <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+            <id>nexus</id>
+	    <name>Nexus</name>
+	    <url>http://forge/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>jboss-snapshots-repository</id>
-            <name>JBoss Snapshot Repository</name>
-            <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+            <id>nexus</id>
+            <name>Nexus</name>
+	    <url>http://forge/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -728,7 +728,7 @@
             <properties>
                 <db.dialect>org.hibernate.dialect.PostgreSQLDialect</db.dialect>
                 <jdbc.driver>org.postgresql.Driver</jdbc.driver>
-                <jdbc.url>jdbc:postgresql://vmg01.mw.lab.eng.bos.redhat.com:5432:hibbr35</jdbc.url>
+		<jdbc.url>jdbc:postgresql://vmg01.mw.lab.eng.bos.redhat.com:5432:hibbr35</jdbc.url>
                 <jdbc.user>hibbr35</jdbc.user>
                 <jdbc.pass>hibbr35</jdbc.pass>
                 <jdbc.isolation/>
