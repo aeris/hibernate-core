@@ -1,10 +1,10 @@
 /*
  * Hibernate, Relational Persistence for Idiomatic Java
  *
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * Copyright (c) 2011, Red Hat Inc. or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
- * distributed under license by Red Hat Middleware LLC.
+ * distributed under license by Red Hat Inc.
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -21,24 +21,35 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.hibernate.envers.revisioninfo;
-
-import org.hibernate.Session;
-import org.hibernate.envers.EntityTrackingRevisionListener;
-import org.hibernate.envers.RevisionType;
+package org.hibernate.test.typedescriptor;
 
 import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
- * @author Adam Warski (adam at warski dot org)
+ * @author Lukasz Antoniak (lukasz dot antoniak at gmail dot com)
  */
-public interface RevisionInfoGenerator {
-	void saveRevisionData(Session session, Object revisionData);
-    Object generate();
+@Entity
+public class VariousTypesEntity implements Serializable {
+	@Id
+	private Integer id;
 
-    /**
-     * @see EntityTrackingRevisionListener#entityChanged(Class, String, Serializable, RevisionType, Object)
-     */
-    void entityChanged(Class entityClass, String entityName, Serializable entityId, RevisionType revisionType,
-                       Object revisionEntity);
+	private byte byteData;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public byte getByteData() {
+		return byteData;
+	}
+
+	public void setByteData(byte byteData) {
+		this.byteData = byteData;
+	}
 }

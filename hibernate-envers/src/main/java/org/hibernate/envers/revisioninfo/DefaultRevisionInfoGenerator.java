@@ -23,17 +23,22 @@
  */
 package org.hibernate.envers.revisioninfo;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.hibernate.MappingException;
 import org.hibernate.Session;
+import org.hibernate.envers.EntityTrackingRevisionListener;
 import org.hibernate.envers.RevisionListener;
+import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.entities.PropertyData;
+import org.hibernate.envers.synchronization.SessionCacheCleaner;
 import org.hibernate.envers.tools.reflection.ReflectionTools;
 import org.hibernate.property.Setter;
 
 /**
  * @author Adam Warski (adam at warski dot org)
+ * @author Lukasz Antoniak (lukasz dot antoniak at gmail dot com)
  */
 public class DefaultRevisionInfoGenerator implements RevisionInfoGenerator {
     private final String revisionInfoEntityName;
@@ -41,6 +46,7 @@ public class DefaultRevisionInfoGenerator implements RevisionInfoGenerator {
     private final Setter revisionTimestampSetter;
     private final boolean timestampAsDate;
     private final Class<?> revisionInfoClass;
+    private final SessionCacheCleaner sessionCacheCleaner;
 
     public DefaultRevisionInfoGenerator(String revisionInfoEntityName, Class<?> revisionInfoClass,
                                        Class<? extends RevisionListener> listenerClass,
@@ -65,10 +71,13 @@ public class DefaultRevisionInfoGenerator implements RevisionInfoGenerator {
             // Default listener - none
             listener = null;
         }
+
+        sessionCacheCleaner = new SessionCacheCleaner();
     }
 
 	public void saveRevisionData(Session session, Object revisionData) {
         session.save(revisionInfoEntityName, revisionData);
+        sessionCacheCleaner.scheduleAuditDataRemoval(session, revisionData);
 	}
 
     public Object generate() {
@@ -87,5 +96,13 @@ public class DefaultRevisionInfoGenerator implements RevisionInfoGenerator {
         }
 
         return revisionInfo;
+    }
+
+    public void entityChanged(Class entityClass, String entityName, Serializable entityId, RevisionType revisionType,
+                              Object revisionInfo) {
+        if (listener instanceof EntityTrackingRevisionListener) {
+            ((EntityTrackingRevisionListener) listener).entityChanged(entityClass, entityName, entityId, revisionType,
+                                                                      revisionInfo);
+        }
     }
 }

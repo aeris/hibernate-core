@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.configuration.AuditConfiguration;
@@ -14,6 +15,7 @@ import org.hibernate.envers.entities.mapper.PersistentCollectionChangeData;
 import org.hibernate.envers.entities.mapper.id.IdMapper;
 import org.hibernate.envers.entities.mapper.relation.MiddleComponentData;
 import org.hibernate.envers.entities.mapper.relation.MiddleIdData;
+import org.hibernate.envers.synchronization.SessionCacheCleaner;
 import org.hibernate.envers.tools.query.Parameters;
 import org.hibernate.envers.tools.query.QueryBuilder;
 import org.hibernate.property.Getter;
@@ -45,6 +47,12 @@ public class ValidityAuditStrategy implements AuditStrategy {
     /** getter for the revision entity field annotated with @RevisionTimestamp */
     private Getter revisionTimestampGetter = null;
 
+    private final SessionCacheCleaner sessionCacheCleaner;
+
+    public ValidityAuditStrategy() {
+        sessionCacheCleaner = new SessionCacheCleaner();
+    }
+
     public void perform(Session session, String entityName, AuditConfiguration auditCfg, Serializable id, Object data,
                         Object revision) {
         AuditEntitiesConfiguration audEntCfg = auditCfg.getAuditEntCfg();
@@ -66,13 +74,14 @@ public class ValidityAuditStrategy implements AuditStrategy {
             addEndRevisionNulLRestriction(auditCfg, qb);
 
             @SuppressWarnings({"unchecked"})
-            List<Object> l = qb.toQuery(session).list();
+            List<Object> l = qb.toQuery(session).setLockOptions(LockOptions.UPGRADE).list();
 
             updateLastRevision(session, auditCfg, l, id, auditedEntityName, revision);
         }
 
         // Save the audit data
         session.save(auditedEntityName, data);
+        sessionCacheCleaner.scheduleAuditDataRemoval(session, data);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -94,7 +103,7 @@ public class ValidityAuditStrategy implements AuditStrategy {
 
         addEndRevisionNulLRestriction(auditCfg, qb);
 
-        final List<Object> l = qb.toQuery(session).list();
+        final List<Object> l = qb.toQuery(session).setLockOptions(LockOptions.UPGRADE).list();
 
         // Update the last revision if one exists.
         // HHH-5967: with collections, the same element can be added and removed multiple times. So even if it's an
@@ -105,6 +114,7 @@ public class ValidityAuditStrategy implements AuditStrategy {
 
         // Save the audit data
         session.save(persistentCollectionChangeData.getEntityName(), persistentCollectionChangeData.getData());
+        sessionCacheCleaner.scheduleAuditDataRemoval(session, persistentCollectionChangeData.getData());
     }
 
     private void addEndRevisionNulLRestriction(AuditConfiguration auditCfg, QueryBuilder qb) {
@@ -177,7 +187,7 @@ public class ValidityAuditStrategy implements AuditStrategy {
             
             // Saving the previous version
             session.save(auditedEntityName, previousData);
-
+            sessionCacheCleaner.scheduleAuditDataRemoval(session, previousData);
         } else {
             throw new RuntimeException("Cannot find previous revision for entity " + auditedEntityName + " and id " + id);
         }
